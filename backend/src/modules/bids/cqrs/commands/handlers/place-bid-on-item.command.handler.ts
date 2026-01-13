@@ -5,6 +5,10 @@ import { UserRepository } from "modules/user/repository/user.repository";
 import { ItemRepository } from "modules/items/repository/item.repository";
 import { BidDomainValidation } from "modules/bids/domain/bid-domain.validation";
 import { DataSource } from "typeorm";
+import { Inject } from "@nestjs/common";
+import { NOTIFICATION_SERVICE_DI_TOKEN } from "modules/notification-service/notification-service.token";
+import { ClientProxy } from "@nestjs/microservices";
+import { NotificationCreateDto } from "modules/notification-service/dto/notification-create.dto";
 
 @CommandHandler(PlaceBidOnItemCommand)
 export class PlaceBidOnItemCommandHandler
@@ -15,6 +19,8 @@ export class PlaceBidOnItemCommandHandler
     private readonly userRepository: UserRepository,
     private readonly itemRepository: ItemRepository,
     private readonly dataSource: DataSource,
+    @Inject(NOTIFICATION_SERVICE_DI_TOKEN.NAME)
+    private readonly client: ClientProxy,
   ) {}
 
   async execute(command: PlaceBidOnItemCommand): Promise<void> {
@@ -42,6 +48,16 @@ export class PlaceBidOnItemCommandHandler
         winnerId: user.id,
         finalPrice: command.price,
       });
+
+      this.client.emit(
+        NOTIFICATION_SERVICE_DI_TOKEN.CREATE_NOTI,
+        new NotificationCreateDto(item.ownerId, "BID_NOTIFICATION", {
+          bidAmount: command.price,
+          bidderName: user.firstName + " " + user.lastName,
+          itemName: item.name,
+          actionUrl: "http://localhost:5173/items/" + item.id,
+        }),
+      );
     });
   }
 }

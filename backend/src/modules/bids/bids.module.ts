@@ -8,6 +8,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { UserModule } from "modules/user/user.module";
 import { ItemsModule } from "../items/items.module";
 import { GetMyBidsQueryHandler } from "./cqrs/queries/handlers/get-my-bids.query.handler";
+import { NotificationServiceModule } from "modules/notification-service/notification-service.module";
 
 const commandsHandlers = [PlaceBidOnItemCommandHandler];
 const queriesHandlers = [GetMyBidsQueryHandler];
@@ -18,6 +19,7 @@ const queriesHandlers = [GetMyBidsQueryHandler];
     CqrsModule,
     UserModule,
     ItemsModule,
+    NotificationServiceModule,
   ],
   controllers: [BidsController],
   providers: [...commandsHandlers, ...queriesHandlers, BidRepository],
