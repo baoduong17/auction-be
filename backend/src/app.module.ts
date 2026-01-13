@@ -25,9 +25,6 @@ import { SharedModule } from "./shared/shared.module";
 import { ItemsModule } from "modules/items/items.module";
 import { BidsModule } from "modules/bids/bids.module";
 import { PdfModule } from "./modules/pdf/pdf.module";
-import { MailerModule } from "@nestjs-modules/mailer";
-import { MailerConfigService } from "shared/services/mailer-config.service";
-import { MailModule } from "./modules/mail/mail.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { MediaServiceModule } from "./modules/media-service/media-service.module";
 import { NotificationServiceModule } from "./modules/notification-service/notification-service.module";
@@ -72,12 +69,6 @@ import { NotificationServiceModule } from "./modules/notification-service/notifi
     ItemsModule,
     BidsModule,
     PdfModule,
-    MailerModule.forRootAsync({
-      useFactory: (mailerConfigService: MailerConfigService) =>
-        mailerConfigService.mailerConfig(),
-      inject: [MailerConfigService],
-    }),
-    MailModule,
     ScheduleModule.forRoot(),
     MediaServiceModule,
     NotificationServiceModule,

@@ -3,13 +3,8 @@ import { Global, Module } from "@nestjs/common";
 
 import { ApiConfigService } from "./services/api-config.service";
 import { PdfConfigService } from "./services/pdf-config.service";
-import { MailerConfigService } from "./services/mailer-config.service";
 
-const providers: Provider[] = [
-  ApiConfigService,
-  PdfConfigService,
-  MailerConfigService,
-];
+const providers: Provider[] = [ApiConfigService, PdfConfigService];
 
 @Global()
 @Module({

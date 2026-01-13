@@ -2,10 +2,11 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { SendMailToWinnerCommand } from "../implements/send-mail-to-winner.command";
 import { ItemRepository } from "modules/items/repository/item.repository";
 import { ItemEntity } from "modules/items/entities/item.entity";
-import { QueryBus } from "@nestjs/cqrs";
-import { SendMailWithTemplate } from "modules/mail/cqrs/queries/implements/send-mail-with-template.query";
 import { DataSource } from "typeorm";
-import { Logger } from "@nestjs/common";
+import { Inject, Logger } from "@nestjs/common";
+import { NOTIFICATION_SERVICE_DI_TOKEN } from "modules/notification-service/notification-service.token";
+import { ClientProxy } from "@nestjs/microservices";
+import { NotificationCreateDto } from "modules/notification-service/dto/notification-create.dto";
 
 @CommandHandler(SendMailToWinnerCommand)
 export class SendMailToWinnerCommandHandler
@@ -13,8 +14,9 @@ export class SendMailToWinnerCommandHandler
 {
   constructor(
     private readonly itemRepository: ItemRepository,
-    private readonly queryBus: QueryBus,
     private readonly dataSource: DataSource,
+    @Inject(NOTIFICATION_SERVICE_DI_TOKEN.NAME)
+    private readonly client: ClientProxy,
   ) {}
 
   async execute(_: SendMailToWinnerCommand): Promise<void> {
@@ -41,12 +43,28 @@ export class SendMailToWinnerCommandHandler
 
           if (!itemWithRelations || !itemWithRelations.winner) return;
 
-          this.queryBus.execute(
-            new SendMailWithTemplate(
-              itemWithRelations.winner.email,
-              `Congratulations! You won the auction for "${itemWithRelations.name}"`,
-              "notify-to-winner.hbs",
-              { ...this.filterData(itemWithRelations) },
+          this.client.emit(
+            NOTIFICATION_SERVICE_DI_TOKEN.CREATE_NOTI,
+            new NotificationCreateDto(
+              itemWithRelations.winner.id,
+              "AUCTION_WON",
+              {
+                winnerName:
+                  itemWithRelations.winner.firstName +
+                  " " +
+                  itemWithRelations.winner.lastName,
+                itemName: itemWithRelations.name,
+                description: itemWithRelations.description,
+                startingPrice: itemWithRelations.startingPrice,
+                finalPrice: itemWithRelations.finalPrice,
+                startTime: itemWithRelations.startTime,
+                endTime: itemWithRelations.endTime,
+                ownerName:
+                  itemWithRelations.owner.firstName +
+                  " " +
+                  itemWithRelations.owner.lastName,
+                ownerEmail: itemWithRelations.owner.email,
+              },
             ),
           );
 
@@ -58,26 +76,5 @@ export class SendMailToWinnerCommandHandler
     );
 
     Logger.log(`Sent ${rawItems.length} email(s) to winners.`);
-  }
-
-  private filterData(item: ItemEntity) {
-    return {
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      startTime: item.startTime,
-      endTime: item.endTime,
-      startingPrice: item.startingPrice,
-      owner: {
-        id: item.owner.id,
-        email: item.owner.email,
-        name: item.owner.firstName + " " + item.owner.lastName,
-      },
-      winner: {
-        id: item.winner.id,
-        email: item.winner.email,
-        name: item.winner.firstName + " " + item.winner.lastName,
-      },
-    };
   }
 }
