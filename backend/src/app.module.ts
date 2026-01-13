@@ -30,6 +30,7 @@ import { MailerConfigService } from "shared/services/mailer-config.service";
 import { MailModule } from "./modules/mail/mail.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { MediaServiceModule } from "./modules/media-service/media-service.module";
+import { NotificationServiceModule } from "./modules/notification-service/notification-service.module";
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { MediaServiceModule } from "./modules/media-service/media-service.module
     MailModule,
     ScheduleModule.forRoot(),
     MediaServiceModule,
+    NotificationServiceModule,
   ],
   providers: [
     {

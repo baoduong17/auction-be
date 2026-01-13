@@ -20,6 +20,7 @@ import { SendMailToWinnerCommandHandler } from "./cqrs/commands/handlers/send-ma
 import { GetItemsByFilterQueryHandler } from "./cqrs/queries/handlers/get-items-by-filter.query.handler";
 import { GetStatisticByUserIdQueryHandler } from "./cqrs/queries/handlers/get-statistic-by-user-id.query.handler";
 import { MediaServiceModule } from "modules/media-service/media-service.module";
+import { NotificationServiceModule } from "modules/notification-service/notification-service.module";
 
 const commandHandlers = [
   CreateItemCommandHandler,
@@ -45,6 +46,7 @@ const queryHandlers = [
     CqrsModule,
     UserModule,
     MediaServiceModule,
+    NotificationServiceModule,
   ],
   controllers: [ItemsController],
   providers: [

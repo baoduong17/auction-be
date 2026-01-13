@@ -18,7 +18,6 @@ import { GoogleTokenFormDto } from "./dto/google-token-form.dto";
 import { AppleTokenFormDto } from "./dto/apple-token-form.dto";
 import { AppleAuthService } from "./apple-auth.service";
 import { UserChangePasswordFormDto } from "./dto/user-change-password-form.dto";
-
 @ApiTags("Auths")
 @Controller("auths")
 export class AuthController {

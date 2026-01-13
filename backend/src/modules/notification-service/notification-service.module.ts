@@ -1,16 +1,16 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-import { MediaService } from "./media-service.token";
+import { NOTIFICATION_SERVICE_DI_TOKEN } from "./notification-service.token";
 
 @Module({
   imports: [
     ClientsModule.registerAsync([
       {
-        name: MediaService.name,
+        name: NOTIFICATION_SERVICE_DI_TOKEN.NAME,
         useFactory: async () => ({
           transport: Transport.RMQ,
           options: {
-            queue: "media_queue",
+            queue: "notification_queue",
             queueOptions: {
               durable: false,
             },
@@ -21,4 +21,4 @@ import { MediaService } from "./media-service.token";
   ],
   exports: [ClientsModule],
 })
-export class MediaServiceModule {}
+export class NotificationServiceModule {}

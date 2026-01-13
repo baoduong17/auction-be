@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   Res,
+  Inject,
 } from "@nestjs/common";
 import { Response } from "express";
 import { CreateItemRequestDto } from "./dto/request/create-item.request.dto";
@@ -41,6 +42,9 @@ import { GetItemsByFilterQuery } from "./cqrs/queries/implements/get-items-by-fi
 import { GetItemsByFilterResponseDto } from "./dto/response/get-items-by-filter.response.dto";
 import { GetStatisticByUserIdResponseDto } from "./dto/response/get-statistic-by-user-id.response.dto";
 import { GetStatisticByUserIdQuery } from "./cqrs/queries/implements/get-statistic-by-user-id.query";
+import { ClientProxy } from "@nestjs/microservices/client/client-proxy";
+import { NOTIFICATION_SERVICE_DI_TOKEN } from "modules/notification-service/notification-service.token";
+import { NotificationCreateDto } from "modules/notification-service/dto/notification-create.dto";
 
 @Controller("items")
 @ApiTags("items")
@@ -48,6 +52,8 @@ export class ItemsController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    @Inject(NOTIFICATION_SERVICE_DI_TOKEN.NAME)
+    private readonly client: ClientProxy,
   ) {}
 
   @Post()
@@ -63,6 +69,11 @@ export class ItemsController {
     @AuthUser() user: UserEntity,
     @Body() createItemRequestDto: CreateItemRequestDto,
   ) {
+    this.client.emit(
+      NOTIFICATION_SERVICE_DI_TOKEN.CREATE_NOTI,
+      new NotificationCreateDto(user.id, "USER_REGISTERED", {}),
+    );
+
     return this.commandBus.execute(
       ItemsMapper.fromCreateItemRequestDto(createItemRequestDto, user.id),
     );
