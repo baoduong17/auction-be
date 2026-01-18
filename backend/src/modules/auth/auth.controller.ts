@@ -24,7 +24,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly appleAuthService: AppleAuthService,
-  ) {}
+  ) { }
 
   @Post("register")
   @ApiOperation({ summary: "Register a new user" })

@@ -145,7 +145,7 @@
         function buildAuthUrl() {
             const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
             url.searchParams.set('client_id', CLIENT_ID);
-            url.searchParams.set('redirect_uri', 'http://localhost:3000/api');
+            url.searchParams.set('redirect_uri', 'http://localhost:3000/');
             url.searchParams.set('response_type', 'token id_token');
             url.searchParams.set('scope', 'openid email profile');
             url.searchParams.set('nonce', rnd());
@@ -169,7 +169,8 @@
         }
 
         async function postToBackend(tokens) {
-            const url = 'http://localhost:3000/api/v1/auths/google';
+            const url = 'http://localhost:3000/auction-service/api/v1/auths/google';
+            console.log("Posting to backend:", url, tokens);
             const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

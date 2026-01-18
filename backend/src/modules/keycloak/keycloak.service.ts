@@ -36,12 +36,12 @@ export class KeycloakService implements OnModuleInit {
         user.password == null
           ? undefined
           : [
-              {
-                type: "password",
-                value: user.password,
-                temporary: false,
-              },
-            ],
+            {
+              type: "password",
+              value: user.password,
+              temporary: false,
+            },
+          ],
     });
   }
 

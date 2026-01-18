@@ -8,7 +8,7 @@ export interface IBlobConfig {
 
 @Injectable()
 export class ApiConfigService {
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) { }
 
   get apiDomain(): string {
     return this.getString("API_DOMAIN");
