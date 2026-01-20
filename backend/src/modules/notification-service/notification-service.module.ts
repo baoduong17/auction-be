@@ -1,15 +1,18 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { NOTIFICATION_SERVICE_DI_TOKEN } from "./notification-service.token";
+import { ApiConfigService } from "shared/services/api-config.service";
 
 @Module({
   imports: [
     ClientsModule.registerAsync([
       {
         name: NOTIFICATION_SERVICE_DI_TOKEN.NAME,
-        useFactory: async () => ({
+        inject: [ApiConfigService],
+        useFactory: async (apiConfigService: ApiConfigService) => ({
           transport: Transport.RMQ,
           options: {
+            urls: [apiConfigService.rabbitMqUrl],
             queue: "notification_queue",
             queueOptions: {
               durable: false,
@@ -21,4 +24,4 @@ import { NOTIFICATION_SERVICE_DI_TOKEN } from "./notification-service.token";
   ],
   exports: [ClientsModule],
 })
-export class NotificationServiceModule {}
+export class NotificationServiceModule { }

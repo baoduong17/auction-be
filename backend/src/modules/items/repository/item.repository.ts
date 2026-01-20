@@ -11,7 +11,7 @@ export class ItemRepository {
     @InjectRepository(ItemEntity)
     private readonly itemRepository: Repository<ItemEntity>,
     private readonly dataSource: DataSource,
-  ) {}
+  ) { }
 
   async create(item: Partial<ItemEntity>): Promise<ItemEntity> {
     return await this.itemRepository.save(this.itemRepository.create(item));
@@ -35,7 +35,9 @@ export class ItemRepository {
 
   async findByIdWithRelationsOrThrow(id: Uuid): Promise<ItemEntity> {
     const item = await this.itemRepository.findOne({
-      where: { id },
+      where: {
+        id
+      },
       relations: {
         owner: true,
         winner: true,
@@ -43,6 +45,11 @@ export class ItemRepository {
           user: true,
         },
       },
+      order: {
+        bids: {
+          createdAt: 'DESC'
+        }
+      }
     });
 
     if (!item) {
@@ -77,7 +84,7 @@ export class ItemRepository {
       startingPrice:
         startingPriceFrom && startingPriceTo
           ? MoreThanOrEqual(startingPriceFrom) &&
-            LessThanOrEqual(startingPriceTo)
+          LessThanOrEqual(startingPriceTo)
           : startingPriceFrom
             ? MoreThanOrEqual(startingPriceFrom)
             : startingPriceTo
@@ -101,16 +108,16 @@ export class ItemRepository {
         name: name ? Like(`%${name}%`) : undefined,
         owner: ownerName
           ? [
-              { firstName: Like(`%${ownerName}%`) },
-              { lastName: Like(`%${ownerName}%`) },
-            ]
+            { firstName: Like(`%${ownerName}%`) },
+            { lastName: Like(`%${ownerName}%`) },
+          ]
           : undefined,
         startTime: startTime ? MoreThanOrEqual(startTime) : undefined,
         endTime: endTime ? LessThanOrEqual(endTime) : undefined,
         startingPrice:
           startingPriceFrom && startingPriceTo
             ? MoreThanOrEqual(startingPriceFrom) &&
-              LessThanOrEqual(startingPriceTo)
+            LessThanOrEqual(startingPriceTo)
             : startingPriceFrom
               ? MoreThanOrEqual(startingPriceFrom)
               : startingPriceTo
@@ -165,8 +172,8 @@ export class ItemRepository {
         (
           result:
             | {
-                revenue: string | null;
-              }
+              revenue: string | null;
+            }
             | undefined,
         ) => {
           if (result && result.revenue !== null) {

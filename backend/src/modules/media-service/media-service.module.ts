@@ -10,11 +10,10 @@ import { ApiConfigService } from "shared/services/api-config.service";
         inject: [ApiConfigService],
         name: MediaService.name,
         useFactory: async (configService: ApiConfigService) => {
-          const url = configService.rabbitMqUrl;
           return {
             transport: Transport.RMQ,
             options: {
-              urls: [url],
+              urls: [configService.rabbitMqUrl],
               queue: 'media_queue',
               queueOptions: {
                 durable: false,
