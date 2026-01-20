@@ -16,6 +16,9 @@ import { ApiConfigService } from "shared/services/api-config.service";
             options: {
               urls: [url],
               queue: 'media_queue',
+              queueOptions: {
+                durable: false,
+              }
             },
           }
         },
